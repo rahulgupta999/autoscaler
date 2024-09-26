@@ -34,6 +34,8 @@ const (
 	gpuTypeKey      = "capacity.cluster-autoscaler.kubernetes.io/gpu-type"
 	gpuCountKey     = "capacity.cluster-autoscaler.kubernetes.io/gpu-count"
 	maxPodsKey      = "capacity.cluster-autoscaler.kubernetes.io/maxPods"
+	taintsKey       = "capacity.cluster-autoscaler.kubernetes.io/taints"
+	labelsKey       = "capacity.cluster-autoscaler.kubernetes.io/labels"
 )
 
 var (
@@ -140,9 +142,11 @@ func parseScalingBounds(annotations map[string]string) (int, int, error) {
 }
 
 func getOwnerForKind(u *unstructured.Unstructured, kind string) *metav1.OwnerReference {
-	for _, ref := range u.GetOwnerReferences() {
-		if ref.Kind == kind && ref.Name != "" {
-			return ref.DeepCopy()
+	if u != nil {
+		for _, ref := range u.GetOwnerReferences() {
+			if ref.Kind == kind && ref.Name != "" {
+				return ref.DeepCopy()
+			}
 		}
 	}
 
